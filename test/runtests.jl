@@ -3,6 +3,7 @@ using LowLevelParticleFilters
 import LowLevelParticleFilters.resample
 using Test, Random, LinearAlgebra, Statistics, StaticArrays, Distributions, Plots
 using MonteCarloMeasurements
+using ComponentArrays, ForwardDiff
 const LLPF = LowLevelParticleFilters
 gr(show=false)
 Random.seed!(0)
@@ -533,6 +534,11 @@ end
 @testset "ekf" begin
     @info "testing ekf"
     include("test_ekf.jl")
+end
+
+@testset "componentarrays" begin
+    @info "Testing ComponentArrays compatibility"
+    include("test_componentarrays.jl")
 end
 
 @testset "iekf" begin

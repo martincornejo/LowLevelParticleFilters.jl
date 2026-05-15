@@ -48,7 +48,7 @@ function predict!(kf::AbstractKalmanFilter, u, p=parameters(kf), t::Real = index
         # Special case useful since empty input is common special case
         kf.x = At*x
     else
-        kf.x = At*x .+ Bt*u |> vec
+        kf.x = At*x .+ Bt*u
     end
     if α == 1
         if R isa SMatrix

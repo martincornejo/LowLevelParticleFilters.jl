@@ -2,21 +2,24 @@
 const StaticCovMat = Union{SMatrix, UpperTriangular{<:Any, <:SMatrix}, Diagonal{<:Any, <:SVector}}
 
 function convert_cov_type(R1, R)
-    if !(eltype(R) <: AbstractFloat)
-        R = float.(R)
-    end
     if (R isa StaticCovMat) || (R isa Matrix)
         return copy(R)
     elseif (R1 isa StaticCovMat) && size(R) == size(R1)
         return SMatrix{size(R1,1),size(R1,2)}(R)
-    elseif R1 isa Matrix
-        return Matrix(R)
+    elseif R isa AbstractMatrix
+        return copy(R)
     else
         return Matrix(R)
     end
 end
+
+# Integer-eltype covariance: promote to float, then dispatch back through the main method.
+convert_cov_type(R1, R::AbstractMatrix{<:Integer}) = convert_cov_type(R1, float.(R))
+
 function convert_x0_type(μ)
     if μ isa Vector || μ isa SVector
+        return copy(μ)
+    elseif μ isa AbstractVector
         return copy(μ)
     else
         return Vector(μ)

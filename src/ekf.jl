@@ -175,14 +175,14 @@ function correct!(kf::AbstractKalmanFilter, measurement_model::EKFMeasurementMod
         Sᵪ  = cholesky(Symmetric(S); check=false)
         issuccess(Sᵪ) || error("Cholesky factorization of innovation covariance failed at time step $t, got S = $(printarray(S))")
         K   = (R*C' + R12)/Sᵪ
-        kf.x += vec(K*e)
+        kf.x += K*e
         kf.R  = symmetrize((I - K*C)*R - K*R12')
     else
         S   = symmetrize(C*R*C') + R2
         Sᵪ  = cholesky(Symmetric(S); check=false)
         issuccess(Sᵪ) || error("Cholesky factorization of innovation covariance failed at time step $t, got S = $(printarray(S))")
         K   = (R*C')/Sᵪ
-        kf.x += vec(K*e)
+        kf.x += K*e
         kf.R  = symmetrize((I - K*C)*R) # WARNING against I .- A
     end
     ll = extended_logpdf(SimpleMvNormal(PDMat(S, Sᵪ)), e)[]# - 1/2*logdet(S) # logdet is included in logpdf
