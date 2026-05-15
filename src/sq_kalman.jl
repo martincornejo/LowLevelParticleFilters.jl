@@ -107,7 +107,7 @@ function predict!(kf::SqKalmanFilter, u, p=parameters(kf), t::Real = index(kf)*k
         # Special case useful since empty input is common special case
         kf.x = At*x
     else
-        kf.x = At*x .+ Bt*u |> vec
+        kf.x = At*x .+ Bt*u
     end
     if α == 1
         M1 = [R*At';R1]
