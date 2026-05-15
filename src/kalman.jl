@@ -6,7 +6,10 @@ function convert_cov_type(R1, R)
         return copy(R)
     elseif (R1 isa StaticCovMat) && size(R) == size(R1)
         return SMatrix{size(R1,1),size(R1,2)}(R)
-    elseif R isa AbstractMatrix
+    elseif R isa DenseMatrix
+        # DenseMatrix subtypes (e.g. ComponentMatrix) support arbitrary
+        # in-place writes, so we can preserve them. Structured wrappers like
+        # Diagonal, Symmetric, ScalMat, PDMat etc. fall through to Matrix.
         return copy(R)
     else
         return Matrix(R)
@@ -19,7 +22,10 @@ convert_cov_type(R1, R::AbstractMatrix{<:Integer}) = convert_cov_type(R1, float.
 function convert_x0_type(μ)
     if μ isa Vector || μ isa SVector
         return copy(μ)
-    elseif μ isa AbstractVector
+    elseif μ isa DenseVector
+        # DenseVector subtypes (e.g. ComponentVector) support in-place writes;
+        # immutable AbstractVectors like FillArrays.Zeros are filtered out by
+        # this check and fall through to the Vector coercion below.
         return copy(μ)
     else
         return Vector(μ)
